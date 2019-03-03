@@ -1,28 +1,44 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
+import CoinTable from './components/coin-table';
 import './App.css';
+import data from './data/coins.json';
 
-class App extends Component {
+export default class App extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      data: data,
+      direction: {
+        price_usd: 'asc',
+      }
+    }
+
+    this.sortBy = this.sortBy.bind(this);
+  }
+
+  sortBy(key) {
+    this.setState({
+      data: data.sort((a, b) => (
+        this.state.direction[key] === 'asc'
+          ? parseFloat(a[key]) - parseFloat(b[key])
+          : parseFloat(b[key]) - parseFloat(a[key]))
+      ),
+      direction: {
+        [key]: this.state.direction[key] === 'asc'
+          ? 'desc'
+          : 'asc'
+      }
+    })
+  };
+
   render() {
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
+      <div className="page-container" >
+        <CoinTable
+          data={this.state.data}
+          sortBy={this.sortBy}
+        />
       </div>
-    );
+    )
   }
-}
-
-export default App;
+};
